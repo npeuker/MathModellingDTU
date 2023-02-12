@@ -28,13 +28,13 @@ def gaussian_gradients(grey_images, sigma):
     return G_3D_x, G_3D_y, G_3D_t
 
 
-G_x, G_y, G_t = gaussian_gradients(grey_images, 1)
+G_x, G_y, G_t = gaussian_gradients(grey_images, 0.5)
 
 # Pixel of arbitrary location - On ball
 p = (115, 50)
 
 # NxN  window
-N = 3 # Must be odd and > 1!
+N = 5 # Must be odd and > 1!
 m = int((N-1)/2)
 
 # Retrieving values for gradients in the window around the pixel
@@ -101,7 +101,7 @@ u = calc_optical_flow(A, V_t)
 def calc_mag(u):
     return np.sqrt(u[0]**2 + u[1]**2)
 
-min_mag = 4
+min_mag = 1
 
 # Iterate over all images
 for l in range(len(grey_images)): # Ignore first image
@@ -109,8 +109,8 @@ for l in range(len(grey_images)): # Ignore first image
     origin_x, origin_y = [],[]
     dir_x, dir_y = [],[]
     fig, ax = plt.subplots()
-    for i in range(0, 256, 10):
-        for j in range(0, 256, 10):
+    for i in range(0, 256, 8):
+        for j in range(0, 256, 8):
             ax.imshow(grey_images[l], cmap=plt.cm.gray)
             ax.set_title("Image " + str(l))
             # Calculate the optical flow for the pixel
@@ -124,8 +124,16 @@ for l in range(len(grey_images)): # Ignore first image
                 origin_y.append(i)
                 dir_x.append(u[0])
                 dir_y.append(u[1])
-
+    title = ""
+    if l < 10:
+        title = "0"+str(l+1)+"image.png"
+    else:
+        title = str(l)+"image.png"
+    print("Saving image: " + title)
     ax.quiver(origin_x, origin_y, dir_x, dir_y, color='r')
-    plt.show()
-    exit() # Only show first image
+    ax.set_title(str(l+1))
+    fig.savefig("images/"+title)
+    plt.close(fig)
+    
+    
                 
