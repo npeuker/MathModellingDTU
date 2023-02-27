@@ -49,14 +49,6 @@ def loadMulti(imName, *args):
     
     return (multiIm, annotationIm)
 
-
-
-
-
-
-
-
-
 def getPix(multiIm, maskIm):
     # Extracting pixels from multispectral image
     # 
