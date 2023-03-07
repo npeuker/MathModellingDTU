@@ -47,8 +47,8 @@ plt.show()
 ## The function getPix extracts the multi spectral pixels from the annotation
 
 # Here is an example with meat- and fat annotation
-[fatPix, fatR, fatC] = hf.getPix(multiIm, annotationIm[:,:,1]);
-[meatPix, meatR, meatC] = hf.getPix(multiIm, annotationIm[:,:,2]);
+[fatPix, fatR, fatC] = hf.getPix(multiIm, annotationIm[:,:,1])
+[meatPix, meatR, meatC] = hf.getPix(multiIm, annotationIm[:,:,2])
 
 # Here we plot the mean values for pixels with meat and fat respectively
 plt.plot(np.mean(meatPix,0),'b')
