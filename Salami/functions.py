@@ -227,6 +227,7 @@ def errorRatesDay(day,dirIn,t):
     # return error rates of that band
     return (bandErrorFat[ind]+bandErrorMeat[ind])/2
 
+
 def errorRates(training,dirIn):
     t = thresholdDay(training,dirIn)
     days = ['01','06','13','20','28']
@@ -237,8 +238,210 @@ def errorRates(training,dirIn):
     for day in days:
         error = errorRatesDay(day,dirIn,t)
         print(day,error)
-        errorRates.append(error)
+        errorRates.append(round(error,3))
+    
+    return errorRates
+
+# annotation plot
+def plotSimpleThresholds(multiIm,annotationIm,thresh,ind, title):
+    # classify image for salami on day 1 - band 2
+    image = multiIm[:,:,ind]
+
+    background = annotationIm[:,:,0]
+    fatLayer = np.zeros(image.shape)
+    meatLayer = np.zeros(image.shape)
+
+    x,y = image.shape
+
+    colours = [[[] for i in range(x)] for j in range(y)]
+    blue = [0, 0, 255] 
+    green = [0, 255, 0]
+    red = [255, 0, 0]
+
+    t = thresh[ind]
+
+    for i in range(x):
+        for j in range(y):
+            fatLayer[i][j] = multiIm[i,j,ind] > t
+            meatLayer[i][j] = multiIm[i,j,ind] < t
+            if(not background[i][j]):
+                colours[i][j] = blue
+            elif(fatLayer[i][j]):
+                # fat
+                colours[i][j] = green
+            else:
+                # meat
+                colours[i][j] = red
+    plt.imshow(colours)
+    title = f"Annotation Simple - {title}"
+    plt.title(title)
+    plt.show()
+    figname = title.replace(" ","_")
+    plt.imsave(f"{figname}.png",colours)
+
+def plotSimple(day,training,dirIn):
+    # load training
+    multiIm, annotationIm = hf.loadMulti(f'multispectral_day{training}.mat' , f'annotation_day{training}.png', dirIn)
+    # compute thresholds
+    thresh = thresholdDay(training,dirIn)
+    # compute band errors
+    bandErrorFat,bandErrorMeat = errorSimple(multiIm,annotationIm,thresh)
+    # compute best spectral band
+    ind = findBestBand(bandErrorFat,bandErrorMeat)
+    
+    # load test
+    multiIm, annotationIm = hf.loadMulti(f'multispectral_day{day}.mat' , f'annotation_day{day}.png', dirIn)
+    # plot 
+    title = f"test day {day}-training day {training}"
+    plotSimpleThresholds(multiIm,annotationIm,thresh,ind,title)
+    
+
+
+
+
+
+
+## Linear Discriminant model
+
+# linear discriminant function
+def linearDisc(x,inv,mu,p=None):
+    first = np.dot(np.dot(np.transpose(x),inv),mu)
+    second = -1/2*np.dot(np.dot(np.transpose(mu),inv),mu)
+    if(p == None):
+        third = 0
+    else:
+        third = np.log(p)
+    return first+second+third
+
+
+# function to compute error rates for the linear discriminant
+def errorLinDisc(multiIm,annotationIm,params,p):
+    # computing error 
+    # fat pixels
+    ann = 1
+    [clPixFat, rFat, cFat] = hf.getPix(multiIm,annotationIm[:,:,ann])
+    # meat pixels
+    ann = 2
+    [clPixMeat, rMeat, cMeat] = hf.getPix(multiIm,annotationIm[:,:,ann])
+
+    fatPixels = len(rFat)
+    meatPixels = len(rMeat)
+
+    # count classified pixels
+    bandErrorFat = []
+    bandErrorMeat = []
+
+    # get the parameters
+    cov, inv, fact = params
+
+    # get means
+    mu_fat,mu_meat = means(multiIm,annotationIm)
+
+    if p == None:
+        p_meat = p
+    else :
+        p_meat = 1-p
+
+    # the function checkSimple returns 0 for meat and 1 for fat
+    fatsClassification = 0
+    for i in range(fatPixels):
+        f = multiIm[rFat[i],cFat[i],:]
+        fatsClassification += (linearDisc(f,inv,mu_meat,p_meat) < linearDisc(f,inv,mu_fat,p))
+    meatClassification = 0
+    for i in range(meatPixels):
+        m = multiIm[rMeat[i],cMeat[i],:]
+        meatClassification += (linearDisc(f,inv,mu_meat,p_meat) < linearDisc(f,inv,mu_fat,p))
+    bandErrorFat = (1-fatsClassification/fatPixels)
+    bandErrorMeat = (1-meatClassification/meatPixels)
+
+    return bandErrorFat,bandErrorMeat
+
+
+# error rates for trained linear discriminant model for a specific day
+def errorRatesDayLinDisc(day, dirIn, params, p):
+    # load images
+    multiIm, annotationIm = hf.loadMulti(f'multispectral_day{day}.mat' , f'annotation_day{day}.png', dirIn)
+
+    # compute error rates
+    bandErrorFat,bandErrorMeat = errorLinDisc(multiIm,annotationIm,params,p)
+    # return error rates of that band
+    return (bandErrorFat+bandErrorMeat)/2
+
+# error rates for different training days for model 2
+def errorRatesLinDisc(training,dirIn,p):
+    days = ['01','06','13','20','28']
+    days.remove(training)
+    print(days)
+
+    # load images
+    multiIm, annotationIm = hf.loadMulti(f'multispectral_day{training}.mat' , f'annotation_day{training}.png', dirIn)
+    # compute parameters
+    para = params(multiIm)
+
+    errorRates = []
+    for day in days:
+        error = errorRatesDayLinDisc(day,dirIn,para,p)
+        print(day,error)
+        errorRates.append(round(error,3))
     
     return errorRates
 
 
+# annotation plot
+def plotLinDiscPara(multiIm,annotationIm,inv,mu_meat,mu_fat,p, title):
+    # classify image for salami on day 1 - band 2
+    image = multiIm[:,:,0]
+
+    
+
+    background = annotationIm[:,:,0]
+    fatLayer = np.zeros(image.shape)
+    meatLayer = np.zeros(image.shape)
+
+    x,y = image.shape
+
+    colours = [[[] for i in range(x)] for j in range(y)]
+    blue = [0, 0, 255] 
+    green = [0, 255, 0]
+    red = [255, 0, 0]
+
+    if p == None:
+        p_meat = None
+    else:
+        p_meat = 1 - p
+
+    for i in range(x):
+        for j in range(y):
+            fatLayer[i][j] = (linearDisc(multiIm[i,j,:],inv,mu_meat,p_meat) < linearDisc(multiIm[i,j,:],inv,mu_fat,p))
+            meatLayer[i][j] = not fatLayer[i][j]
+            if(not background[i][j]):
+                colours[i][j] = blue
+            elif(fatLayer[i][j]):
+                # fat
+                colours[i][j] = green
+            else:
+                # meat
+                colours[i][j] = red
+    plt.imshow(colours)
+    title = f"Annotation Lin Disc - {title}"
+    plt.title(title)
+    plt.show()
+    figname = title.replace(" ","_")
+    plt.imsave(f"{figname}.png",colours)
+
+def plotLinDisc(day,training,dirIn,p):
+    # load training
+    multiIm, annotationIm = hf.loadMulti(f'multispectral_day{training}.mat' , f'annotation_day{training}.png', dirIn)
+    # compute thresholds
+    cov,inv,fact = params(multiIm)
+    # compute band errors
+    mu_fat,mu_meat = means(multiIm,annotationIm)
+    
+    # load test
+    multiIm, annotationIm = hf.loadMulti(f'multispectral_day{day}.mat' , f'annotation_day{day}.png', dirIn)
+    # plot 
+    title = f"test day {day}-training day {training}"
+    if p != None:
+        title += f" p={p}"
+    plotLinDiscPara(multiIm,annotationIm,inv,mu_meat,mu_fat,p,title)
+    
