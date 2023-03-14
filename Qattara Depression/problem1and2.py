@@ -1,0 +1,105 @@
+import numpy as np
+import matplotlib.pyplot as plt
+
+# problem 1
+# solving how much the water levels would drop if the qattara depression was filled with water
+
+def water_level_drop():
+    # volume of the qattara depression in km^3
+    volume_qattara = 1213
+    # surface area of water on earth in km^2
+    surface_area = 3.619e8
+    # how much would the water levels drop if the qattara depression was filled with water
+    water_levels_drop = volume_qattara / surface_area
+    # convert to from km to cm
+    water_levels_drop *= 100000
+    return water_levels_drop
+
+print("The water levels would drop by", water_level_drop(), "cm if the qattara depression was filled with water.")
+
+# problem 2
+# load channel_data.txt file
+data = np.loadtxt("channel_data.txt")
+#print(data)
+latitude = data[:,0]
+longitude = data[:,1]
+height = data[:,2]
+
+def distance_calculator():
+    # create an empty array to store the distance between each point
+    distance_array = [0]
+    radius_earth = 6371
+    # calculate the distance between each point such that there are 250 meter between each point
+    for i in range(len(latitude)-1):
+        # calculate the distance between each point using the haversine formula
+        # convert latitude and longitude to radians
+        lat1 = np.radians(latitude[i])
+        lat2 = np.radians(latitude[i+1])
+        lon1 = np.radians(longitude[i])
+        lon2 = np.radians(longitude[i+1])
+        # calculate the distance between each point
+        distance = 2 * radius_earth * np.arcsin(np.sqrt(np.sin((lat2 - lat1) / 2) ** 2 + np.cos(lat1) * np.cos(lat2) * np.sin((lon2 - lon1) / 2) ** 2))
+        # add the distance to the distance array
+        distance_array.append(distance_array[i] + distance)
+
+    return distance_array
+
+distances = distance_calculator()
+
+# interpolate the elevation data
+height_interpolated = np.interp(distances, distances, height)
+
+# convert interpolated elevation data to integers
+height_interpolated = height_interpolated.astype(int)
+#save the interpolated elevation data to a csv file with integers
+np.savetxt("elevation_interpolated.txt", height_interpolated, fmt='%i', delimiter=",")
+
+
+# plot distance vs elevation
+# plt.plot(distances, height_interpolated)
+# plt.xlabel("Distance (km)")
+# plt.ylabel("Elevation (m)")
+# plt.title("Distance vs Elevation")
+# plt.show()
+
+# problem 3
+# load a dataframe from the csv file
+import pandas as pd
+df = pd.read_csv("nukeDemo.csv", header=None)
+# extract the data from the dataframe
+data = df.values
+print(data)
+myModel = data[:,0][1:]
+x = data[:,1][1:]
+# convert x to floats
+x = x.astype(float)
+x = x.astype(int)
+
+R = data[:,2][1:]
+
+# Number of nukes needed
+
+
+Dist_H = [0 for i in range(len(x))]
+Height_H = [0 for i in range(len(x))]
+print("Number of nukes needed:", sum(x))
+for i in range(len(x)):
+    if x[i] == 1:
+        Dist_H[i] = distances[i]
+        Height_H[i] = height_interpolated[i]
+    else:
+        continue
+
+print(Dist_H)
+print(Height_H)
+
+plt.plot(distances, height_interpolated)
+plt.scatter(Dist_H, Height_H, color="red")
+plt.xlabel("Distance (km)")
+plt.ylabel("Elevation (m)")
+plt.title("Distance vs Elevation")
+plt.show()
+        
+
+
+
