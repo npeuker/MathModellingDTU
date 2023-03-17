@@ -15,7 +15,7 @@ def water_level_drop():
     water_levels_drop *= 100000
     return water_levels_drop
 
-print("The water levels would drop by", water_level_drop(), "cm if the qattara depression was filled with water.")
+# print("The water levels would drop by", water_level_drop(), "cm if the qattara depression was filled with water.")
 
 # problem 2
 # load channel_data.txt file
@@ -62,44 +62,13 @@ np.savetxt("elevation_interpolated.txt", height_interpolated, fmt='%i', delimite
 # plt.title("Distance vs Elevation")
 # plt.show()
 
-# problem 3
-# load a dataframe from the csv file
-import pandas as pd
-df = pd.read_csv("nukeDemo.csv", header=None)
-# extract the data from the dataframe
-data = df.values
-print(data)
-myModel = data[:,0][1:]
-x = data[:,1][1:]
-# convert x to floats
-x = x.astype(float)
-x = x.astype(int)
-
-R = data[:,2][1:]
-
-# Number of nukes needed
 
 
-Dist_H = [0 for i in range(len(x))]
-Height_H = [0 for i in range(len(x))]
-print("Number of nukes needed:", sum(x))
-for i in range(len(x)):
-    if x[i] == 1:
-        Dist_H[i] = distances[i]
-        Height_H[i] = height_interpolated[i]
-    else:
-        continue
 
-print(Dist_H)
-print(Height_H)
 
-plt.plot(distances, height_interpolated)
-plt.scatter(Dist_H, Height_H, color="red")
-plt.xlabel("Distance (km)")
-plt.ylabel("Elevation (m)")
-plt.title("Distance vs Elevation")
-plt.show()
-        
+
+
+
 
 
 
