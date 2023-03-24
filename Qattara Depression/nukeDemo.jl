@@ -156,25 +156,39 @@ function solveIP6(H,K)
     h = length(H)
     myModel = Model(Cbc.Optimizer)
     # If your want ot use GLPK instead use:
-    # myModel = Model(GLPK.Optimizer)
+    #myModel = Model(GLPK.Optimizer)
 
-    A = constructA(H,K)
+    A0 = constructA(H,K0)
+    A1 = constructA(H,K1)
+    A2 = constructA(H,K2)
+    
 
     @variable(myModel, x[1:h], Bin )
     @variable(myModel, R[1:h] >= 0 )
-
     @variable(myModel, t[1:h] >= 0)
-    @constraint(myModel, [j=1:h], R[j] - H[j] - 10 <= t[j])
-    @constraint(myModel, [j=1:h], -R[j] + H[j] + 10 <= t[j])
-    @objective(myModel, Min, sum(t[j] for j=1:h))
-    @objective(myModel, Min, sum(x[j] for j=1:h) )
+    @variable(myModel, y0, Bin)
+    @variable(myModel, y1, Bin)
+    @variable(myModel, y2, Bin)
+
+    # @constraint(myModel, [j=1:h], R[j] - H[j] - 10 <= t[j])
+    # @constraint(myModel, [j=1:h], -R[j] + H[j] + 10 <= t[j])
+
+    # implement the possibility of using different yields from settings
+
+    # @objective(myModel, Min, sum(t[j] for j=1:h))
+    # @objective(myModel, Min, sum(x[j] for j=1:h) )
+
+    @objective(myModel, Min, sum(R[j]-H[j]-10 for j=1:h) )
 
     # make sure that two x values next to each other is not both 1
 
     @constraint(myModel, [j=2:h-1], x[j-1] + x[j] <= 1)
     @constraint(myModel, [j=2:h-1], x[j] + x[j+1] <= 1 )
     @constraint(myModel, [j=1:h],R[j] >= H[j] + 10 )
-    @constraint(myModel, [i=1:h],R[i] == sum(A[i,j]*x[j] for j=1:h) )
+    # @constraint(myModel, [i=1:h],R[i] == sum(A[i,j]*x[j] for j=1:h) )
+    @constraint(myModel, [i=1:h],R[i] == y0*sum(A0[i,j]*x[j] for j=1:h) + y1*sum(A1[i,j]*x[j] for j=1:h) + y2*sum(A2[i,j]*x[j] for j=1:h))
+    @constraint(myModel, y0 + y1 + y2 == 1)
+
     optimize!(myModel)
 
     if termination_status(myModel) == MOI.OPTIMAL
