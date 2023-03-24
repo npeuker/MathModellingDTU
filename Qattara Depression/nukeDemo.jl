@@ -2,8 +2,11 @@ using GLPK, Cbc, JuMP, SparseArrays
 using DataFrames, CSV
 
 # reading elevation_interpolated.csv
-height_interpolated = CSV.File("elevation_interpolated.csv")
+height_interpolated = CSV.File("/Users/ninapeuker/Desktop/General_Engineering/6th semester 2023/02526 Mathematical Modeling/02526 Code/MathModellingDTU/Qattara Depression/elevation_interpolated.csv")
 height = []
+
+println("Read csv file")
+
 # converting it into the right format
 for row in height_interpolated
     push!(height, row[1])

@@ -15,11 +15,14 @@ def water_level_drop():
     water_levels_drop *= 100000
     return water_levels_drop
 
-# print("The water levels would drop by", water_level_drop(), "cm if the qattara depression was filled with water.")
+print("The water levels would drop by", water_level_drop(), "cm if the qattara depression was filled with water.")
 
 # problem 2
 # load channel_data.txt file
-data = np.loadtxt("channel_data.txt")
+import sys 
+sys.path.append("/Users/ninapeuker/Desktop/General_Engineering/6th semester 2023/02526 Mathematical Modeling/02526 Code/MathModellingDTU/Qattara Depression")
+path = "/Users/ninapeuker/Desktop/General_Engineering/6th semester 2023/02526 Mathematical Modeling/02526 Code/MathModellingDTU/Qattara Depression/"
+data = np.loadtxt(path + "channel_data.txt")
 #print(data)
 latitude = data[:,0]
 longitude = data[:,1]
@@ -45,9 +48,20 @@ def distance_calculator():
     return distance_array
 
 distances = distance_calculator()
+print(distances)
+print(len(height))
+
+# create distance array for interpolation
+dist_int = [0]
+for i in range(int(distances[-1]/0.25)):
+    dist_int.append(dist_int[-1]+0.25)
+
+print(dist_int)
+
 
 # interpolate the elevation data
-height_interpolated = np.interp(distances, distances, height)
+height_interpolated = np.interp(dist_int, distances, height)
+print(len(height_interpolated))
 
 # convert interpolated elevation data to integers
 height_interpolated = height_interpolated.astype(int)
@@ -56,11 +70,11 @@ np.savetxt("elevation_interpolated.txt", height_interpolated, fmt='%i', delimite
 
 
 # plot distance vs elevation
-# plt.plot(distances, height_interpolated)
-# plt.xlabel("Distance (km)")
-# plt.ylabel("Elevation (m)")
-# plt.title("Distance vs Elevation")
-# plt.show()
+plt.plot(dist_int, height_interpolated)
+plt.xlabel("Distance (km)")
+plt.ylabel("Elevation (m)")
+plt.title("Distance vs Elevation")
+plt.show()
 
 
 

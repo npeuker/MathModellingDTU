@@ -6,7 +6,9 @@ from problem1and2 import height_interpolated, distances
 # problem 3
 # load a dataframe from the csv file
 import pandas as pd
-df = pd.read_csv("nukeDemo.csv", header=None)
+path = "/Users/ninapeuker/Desktop/General_Engineering/6th semester 2023/02526 Mathematical Modeling/02526 Code/MathModellingDTU/Qattara Depression/"
+
+df = pd.read_csv(path+"nukeDemo.csv", header=None)
 # extract the data from the dataframe
 data = df.values
 # print(data)
@@ -36,7 +38,7 @@ for i in range(len(x)):
         
 # problem 4
 # load newNukeDemo.csv file
-df1 = pd.read_csv("newNukeDemo.csv", header=None)
+df1 = pd.read_csv(path+"newNukeDemo.csv", header=None)
 # extract the data from the dataframe
 data1 = df1.values
 
@@ -105,20 +107,20 @@ for i in range(len(nukes_smooth)):
 distances = distances[:len(x)]
 
 # plot the dept of the channel for the not smooth model with placement of nukes
-# plt.plot(distances, channelheight, label="Channel depth not smooth model")
-# plt.scatter(distances, nukes_notSmooth, label="Placement of nukes not smooth model", color="red")
-# plt.xlabel("Distance (m)")
-# plt.ylabel("Channel depth (m)")
-# plt.legend()
-# plt.show()
+plt.plot(distances, channelheight, label="Channel depth not smooth model")
+plt.scatter(distances, nukes_notSmooth, label="Placement of nukes not smooth model", color="red")
+plt.xlabel("Distance (m)")
+plt.ylabel("Channel depth (m)")
+plt.legend()
+plt.show()
 
 # plot the dept of the channel for the smooth model with placement of nukes
-# plt.plot(distances, channelheight1, label="Channel depth smooth model")
-# plt.scatter(distances, nukes_smooth, label="Placement of nukes smooth model", color="red")
-# plt.xlabel("Distance (m)")
-# plt.ylabel("Channel depth (m)")
-# plt.legend()
-# plt.show()
+plt.plot(distances, channelheight1, label="Channel depth smooth model")
+plt.scatter(distances, nukes_smooth, label="Placement of nukes smooth model", color="red")
+plt.xlabel("Distance (m)")
+plt.ylabel("Channel depth (m)")
+plt.legend()
+plt.show()
 
 
 
