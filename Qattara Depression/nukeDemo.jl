@@ -2,7 +2,7 @@ using GLPK, Cbc, JuMP, SparseArrays
 using DataFrames, CSV
 
 # reading elevation_interpolated.csv
-height_interpolated = CSV.File("/Users/ninapeuker/Desktop/General_Engineering/6th semester 2023/02526 Mathematical Modeling/02526 Code/MathModellingDTU/Qattara Depression/elevation_interpolated.csv")
+height_interpolated = CSV.File("elevation_interpolated.csv")
 height = []
 
 println("Read csv file")
@@ -14,6 +14,10 @@ end
 height = Int.(height)
 
 # values of K for different types of nukes
+K = [
+300 140 40
+]
+
 K0 = [
 300 140 40
 ]
@@ -201,6 +205,49 @@ function solveIP6(H,K)
     return  JuMP.objective_value(myModel),JuMP.value.(x), JuMP.value.(R)
 end
 
-myModel6, x6,R6 = solveIP6(height, K2)
-df = DataFrame(myModel6=myModel6, x6=x6, R6=R6)
-CSV.write("nukeDemo6.csv", df)
+#myModel6, x6,R6 = solveIP6(height, K2)
+#df = DataFrame(myModel6=myModel6, x6=x6, R6=R6)
+#CSV.write("nukeDemo6.csv", df)
+
+
+
+
+
+
+###################################################################################
+
+function solveIP(H, K0, K1, k2)
+    h = length(H)
+    myModel = Model(Cbc.Optimizer)
+    # If your want ot use GLPK instead use:
+    # myModel = Model(GLPK.Optimizer)
+
+    A0 = constructA(H,K0)
+    A1 = constructA(H,K1)
+    A2 = constructA(H,K2)
+
+    @variable(myModel, x[1:h], Bin )
+    @variable(myModel, R[1:h] >= 0 )
+
+    @objective(myModel, Min, sum(x[j] for j=1:h) )
+
+    @constraint(myModel, [j=1:h],R[j] >= H[j] + 10 )
+    @constraint(myModel, [i=1:h],R[i] == sum(A1[i,j]*x[j] for j=1:h) )
+    optimize!(myModel)
+
+    if termination_status(myModel) == MOI.OPTIMAL
+        # println("Objective value: ", JuMP.objective_value(myModel))
+        # println("x = ", JuMP.value.(x))
+        # println("R = ", JuMP.value.(R))
+    else
+        println("Optimize was not succesful. Return code: ", termination_status(myModel))
+    end
+    return  JuMP.objective_value(myModel),JuMP.value.(x), JuMP.value.(R)
+end
+
+ myModel, x,R = solveIP(height,K0, K1, K2)
+ println("Type of myModel", typeof(myModel))
+
+# save myModel, x and R to a csv file in folder
+ df = DataFrame(myModel=myModel, x=x, R=R)
+ CSV.write("nukeDemotest.csv", df)
