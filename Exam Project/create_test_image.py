@@ -18,7 +18,22 @@ def create_new_im(size):
 
     return image
 
-image = create_new_im(50)
+# image = create_new_im(50)
 
-plt.imshow(image)
-plt.show()
+# plt.imshow(image)
+# plt.show()
+
+inp = "N"
+
+while inp == "N":
+    image = create_new_im(50)
+    plt.imshow(image)
+    plt.show()
+    inp = input("Is the picture satisfactory?, (Y/N)")
+    if inp == "Y":
+        np.save('test_image', image)
+        break
+
+
+
+
