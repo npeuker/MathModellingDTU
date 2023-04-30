@@ -2,38 +2,26 @@ import numpy as np
 import random
 import matplotlib.pyplot as plt
 
-def create_new_im(size):
+def new_image(size):
     attenuation_wood = 4.2848231320000005
     attenuation_steel = 395.44319
     attenuation_lead = 130.6
     image = np.zeros((size,size))
-    for i in range(size):
-        for j in range(size):
-            if random.random() < 0.0008:
-                image[i,j] = attenuation_lead
-            elif random.random() < 0.001:
-                image[i,j] = attenuation_steel
+    resize = int(size/100)
+    for i in range(resize,size-resize, resize):
+        for j in range(resize, size-resize, resize):
+            if random.random() < 0.00015:
+                image[i:i+resize,j:j+resize] = attenuation_lead
+            elif random.random() < 0.00015:
+                image[i:i+resize,j:j+resize] = attenuation_steel
             else:
-                image[i,j] = attenuation_wood
-
+                image[i][j] = attenuation_wood
     return image
 
-# image = create_new_im(50)
-
-# plt.imshow(image)
-# plt.show()
-
-inp = "N"
-
-while inp == "N":
-    image = create_new_im(50)
-    plt.imshow(image)
+# create 10 images
+size = 500
+for i in range(3):
+    a = new_image(size)
+    plt.imshow(a)
     plt.show()
-    inp = input("Is the picture satisfactory?, (Y/N)")
-    if inp == "Y":
-        np.save('test_image', image)
-        break
-
-
-
-
+    np.save(f'Exam Project/test images without noise/new_test_image{i}', a)
