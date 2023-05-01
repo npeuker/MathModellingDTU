@@ -19,9 +19,9 @@ def new_image(size):
     return image
 
 # create 10 images
-size = 500
-for i in range(3):
-    a = new_image(size)
-    plt.imshow(a)
-    plt.show()
-    np.save(f'Exam Project/test images without noise/new_test_image{i}', a)
+# size = 500
+# for i in range(3):
+#     a = new_image(size)
+#     plt.imshow(a)
+#     plt.show()
+#     np.save(f'Exam Project/test images without noise/new_test_image{i}', a)
