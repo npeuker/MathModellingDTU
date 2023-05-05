@@ -6,7 +6,7 @@ Created on Mon Mar 30 14:12:04 2020
 import numpy as np
 from scipy.ndimage import gaussian_filter
 
-def phantom_plank(phantom_size, angle = 0, p = 1, v0 = None, ring_width = 1, y1 = 0.322, y2 = 0.422, gaussian_blurr = 0): 
+def phantom_plank(phantom_size, angle = 0, p = 1, v0 = None, ring_width = 1, y1 = 0.222, y2 = 0.422, gaussian_blurr = 0): 
     '''
     Parameters
     ----------
@@ -34,7 +34,8 @@ def phantom_plank(phantom_size, angle = 0, p = 1, v0 = None, ring_width = 1, y1 
     if v0 is not None: 
         vx_00, vy_00, vz_00 = v0
     else: 
-        vx_00, vy_00, vz_00 = (-phantom_size[2],phantom_size[0]/2,0)
+        # vx_00, vy_00, vz_00 = (-phantom_size[2],phantom_size[0]/2,0)
+        vx_00, vy_00, vz_00 = (-1/2*phantom_size[1], 1/2*phantom_size[0],1/2*phantom_size[2]) # Want to have pith in centre
     #period = np.ceil(ring_width/p)
     period = ring_width
     #period>0.5
