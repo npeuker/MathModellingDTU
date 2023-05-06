@@ -27,15 +27,17 @@ folder = "validation-data"
 t1 = time.time()
 # First plank
 
-# subfolder = "/plank1/"
-# ring_width1 = 30
-# angle1 = 0
-# blur1 = 5
-# plank = gen_plank(ring_width=ring_width1, blur=blur1, angle=angle1)
-# slices=get_slices(plank)
+subfolder = "/plank1/"
+ring_width1 = 30
+angle1 = 0
+blur1 = 5
+plank = gen_plank(ring_width=ring_width1, blur=blur1, angle=angle1)
+slices=get_slices(plank)
 
-# for i in [0, 1, 2, 3, 4]:
-#     plt.imsave(folder+subfolder+f"slice{i}.png", slices[i])
+for i in [0, 1, 2, 3, 4]:
+    print(f"Shape of slice: {slices[i].shape}")
+    exit()
+    # plt.imsave(folder+subfolder+f"slice{i}.png", slices[i])
 
 
 # Second plank
@@ -66,15 +68,15 @@ t1 = time.time()
 
 # Fourth/final plank
 
-subfolder = "/plank4/"
-ring_width4 = 30
-angle4 = 5
-blur4 = 5
-plank = gen_plank(ring_width=ring_width4, blur=blur4, angle=angle4)
-slices=get_slices(plank)
+# subfolder = "/plank4/"
+# ring_width4 = 30
+# angle4 = 5
+# blur4 = 5
+# plank = gen_plank(ring_width=ring_width4, blur=blur4, angle=angle4)
+# slices=get_slices(plank)
 
-for i in [0, 1, 2, 3, 4]:
-    plt.imsave(folder+subfolder+f"slice{i}.png", slices[i])
+# for i in [0, 1, 2, 3, 4]:
+#     plt.imsave(folder+subfolder+f"slice{i}.png", slices[i])
 
 
 

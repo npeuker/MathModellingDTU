@@ -1,0 +1,32 @@
+Generate 4 different planks (all of size 500x500)
+
+1st plank:
+rw = 30
+angle = 0
+blur = 5
+1st slice (slice.png): 1 lead (63, 463) 2mm
+
+
+2nd plank
+rw = 40
+angle = 2
+blur = 3
+5th slice (slice4.png): 3 steel (305, 392) 3mm, (442, 255) 4mm, (246,82) 5mm
+
+3rd plank
+rw = 50
+angle = 0
+blur = 2
+2nd slice (slice1.png): 1 lead (83, 376) 3mm
+3rd slice (slice2.png): 2 steel (84, 81) 2mm, (150, 280) 6mm, 2 lead (364, 416) 3mm, (290, 287) 4mm
+
+
+4th plank
+rw = 30
+angle = 5
+blur = 5
+Lead and steel:
+1st slice (slice0.png): 2 lead (476, 41) (449, 291) , 1 steel (184, 57)
+5th slice (slice4.png): 2 steel (457, 306) (95, 120)
+
+Take following slices: 0, 100, 200, 300, 400
